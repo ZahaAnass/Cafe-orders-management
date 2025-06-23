@@ -1,0 +1,61 @@
+cafe-order-system/
+│
+├── app.py                      # Main application entry point
+├── config.py                   # Configuration settings
+│
+├── database/                   # Database related files
+│   ├── __init__.py
+│   ├── models.py               # SQLAlchemy models
+│   ├── crud.py                 # Database operations
+│   └── database.py             # Database connection and setup
+│
+├── views/                      # UI components
+│   ├── __init__.py
+│   ├── dashboard.py            # Main dashboard view
+│   ├── order_form.py           # Add/Edit order form
+│   ├── reports.py              # Reports and statistics view
+│   └── components/             # Reusable UI components
+│       ├── __init__.py
+│       ├── order_table.py      # Order list table
+│       └── stats_cards.py      # Statistics cards
+│
+├── models/                     # Business logic models
+│   ├── __init__.py
+│   ├── order.py                # Order business logic
+│   └── report.py               # Report generation logic
+│
+├── utils/                      # Utility functions
+│   ├── __init__.py
+│   ├── validators.py           # Input validation
+│   ├── formatters.py           # Data formatting
+│   └── export.py               # Export to PDF/CSV
+│
+└── assets/                     # Static files
+    ├── icons/                  # Application icons
+    └── styles/                 # Custom styles
+
+mkdir -p cafe-order-system/{database,views/components,models,utils,assets/{icons,styles}}
+
+touch cafe-order-system/app.py
+touch cafe-order-system/config.py
+touch cafe-order-system/database/__init__.py
+touch cafe-order-system/database/models.py
+touch cafe-order-system/database/crud.py
+touch cafe-order-system/database/database.py
+touch cafe-order-system/views/__init__.py
+touch cafe-order-system/views/dashboard.py
+touch cafe-order-system/views/order_form.py
+touch cafe-order-system/views/reports.py
+touch cafe-order-system/views/components/__init__.py
+touch cafe-order-system/views/components/order_table.py
+touch cafe-order-system/views/components/stats_cards.py
+touch cafe-order-system/models/__init__.py
+touch cafe-order-system/models/order.py
+touch cafe-order-system/models/report.py
+touch cafe-order-system/utils/__init__.py
+touch cafe-order-system/utils/validators.py
+touch cafe-order-system/utils/formatters.py
+touch cafe-order-system/utils/export.py
+
+echo "Icons directory" > cafe-order-system/assets/icons/README.md
+echo "Styles directory" > cafe-order-system/assets/styles/README.md
