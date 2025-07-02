@@ -1,3 +1,5 @@
+import re
+
 def validate_customer(name, phone, email):
     if not name or not phone or not email:
         return False
