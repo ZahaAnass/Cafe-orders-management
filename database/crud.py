@@ -1,4 +1,4 @@
-from database import connect_db, init_db
+from database.database import connect_db, init_db
 
 def connection():
     conn = connect_db()
