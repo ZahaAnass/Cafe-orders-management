@@ -1,5 +1,6 @@
 import customtkinter as ctk
 from views.dashboard import Dashboard
+from database.database import init_db
 
 class App(ctk.CTk):
     def __init__(self):
@@ -12,4 +13,5 @@ class App(ctk.CTk):
 if __name__ == "__main__":
     ctk.set_appearance_mode("light")  # ou "system" ou "dark"
     app = App()
+    # init_db()
     app.mainloop()
