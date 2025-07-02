@@ -1,6 +1,20 @@
+from database.database import connect_db
+
 class Report:
-    def __init__(self, db):
-        self.db = db
+    def __init__(self):
+        self.db = connect_db()
+
+    def get_data(self, start_date, product_category):
+        cursor = self.db.cursor()
+        query = """SELECT o.id, o.created_at, o.customer_id, o.status, SUM(oi.quantity * p.price) as total
+                    FROM orders o
+                    JOIN order_items oi ON o.id = oi.order_id
+                    JOIN products p ON oi.product_id = p.id
+                    WHERE o.created_at >= %s
+                    AND p.category = %s
+                    GROUP BY o.id"""
+        cursor.execute(query, (start_date, product_category))
+        return cursor.fetchall()
 
     def sales_by_day(self):
         cursor = self.db.cursor()
