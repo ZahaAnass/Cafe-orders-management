@@ -2,6 +2,8 @@ import customtkinter as ctk
 from tkinter import ttk
 from PIL import Image, ImageTk
 import os
+from views.order_form import OrderForm
+from views.reports import ReportsView
 
 # --- Palette raffinée ---
 PRIMARY_BG = "#f7f3ee"        # Fond général (beige très clair)
@@ -49,12 +51,14 @@ class Dashboard(ctk.CTkFrame):
         nav.pack(side="top", fill="x", pady=(10, 0))
 
         btn_style = {"fg_color": BTN_BG, "hover_color": BTN_HOVER, "text_color": TEXT_LIGHT,
-                     "corner_radius": 18, "font": ctk.CTkFont(size=15, weight="bold")}
+                    "corner_radius": 18, "font": ctk.CTkFont(size=15, weight="bold")}
+
+
 
         # Icônes unicode pour chaque bouton (pour l'effet visuel)
-        ctk.CTkButton(nav, text="🆕 Nouvelle Commande", **btn_style).pack(side="left", padx=10, pady=8)
+        ctk.CTkButton(nav, text="🆕 Nouvelle Commande", **btn_style, command=lambda: OrderForm(self)).pack(side="left", padx=10, pady=8)
         ctk.CTkButton(nav, text="🔍 Filtrer", **btn_style).pack(side="left", padx=10, pady=8)
-        ctk.CTkButton(nav, text="📊 Statistiques", **btn_style).pack(side="left", padx=10, pady=8)
+        ctk.CTkButton(nav, text="📊 Statistiques", **btn_style, command= lambda : ReportsView(self)).pack(side="left", padx=10, pady=8)
         ctk.CTkButton(nav, text="⬇️ Exporter", **btn_style).pack(side="left", padx=10, pady=8)
         ctk.CTkButton(nav, text="⏻ Quitter", **btn_style, command=self.quit_app).pack(side="right", padx=24, pady=8)
 
@@ -119,10 +123,10 @@ class Dashboard(ctk.CTkFrame):
         footer = ctk.CTkFrame(self, fg_color=HEADER_BG, height=42)
         footer.pack(side="bottom", fill="x")
         ctk.CTkLabel(footer, text="Total commandes affichées : 5",
-                     text_color=ACCENT, font=ctk.CTkFont(size=16, weight="bold"), fg_color="transparent")\
+                    text_color=ACCENT, font=ctk.CTkFont(size=16, weight="bold"), fg_color="transparent")\
             .pack(side="left", padx=22)
         ctk.CTkLabel(footer, text="Café Manager © 2025", text_color=TEXT_LIGHT,
-                     font=ctk.CTkFont(size=14), fg_color="transparent").pack(side="right", padx=22)
+                    font=ctk.CTkFont(size=14), fg_color="transparent").pack(side="right", padx=22)
 
     def quit_app(self):
         self.winfo_toplevel().destroy()
