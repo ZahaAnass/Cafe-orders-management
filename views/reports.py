@@ -1,50 +1,74 @@
 import customtkinter as ctk
 from tkinter import ttk
-from models.report import Report
-from utils.export import export_to_csv, export_to_pdf
-from tkcalendar import DateEntry
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+import matplotlib.pyplot as plt
+from database.crud import get_orders_stats  
 
-class ReportsView(ctk.CTkFrame):
-    def __init__(self, parent, **kwargs):
-        super().__init__(parent, **kwargs)
-        self.report = Report()
+HEADER_BG = "#432818"
+BTN_BG = "#a47149"
+BTN_HOVER = "#d9ae7e"
+ACCENT = "#81c784"
+TABLE_BG = "#fff8e1"
+TEXT_LIGHT = "#fff8e1"
+
+class ReportsView(ctk.CTkToplevel):
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.title("Statistiques")
+        self.geometry("700x500")
+        self.configure(fg_color=HEADER_BG, corner_radius=14)
+        self.resizable(False, False)
         self.create_widgets()
 
     def create_widgets(self):
-        # Filters
-        filters_frame = ctk.CTkFrame(self, corner_radius=10)
-        filters_frame.pack(fill="x", padx=10, pady=10)
+        # Title bar
+        titlebar = ctk.CTkFrame(self, fg_color=HEADER_BG, corner_radius=14)
+        titlebar.pack(fill="x", pady=(0, 8))
+        ctk.CTkLabel(titlebar, text=" Statistiques", font=("Arial", 20, "bold"), text_color=ACCENT).pack(side="left", padx=18, pady=14)
+        ctk.CTkButton(titlebar, text="❌", width=36, fg_color=BTN_BG, hover_color=BTN_HOVER, command=self.destroy, font=("Arial", 16)).pack(side="right", padx=10, pady=10)
 
-        ttk.Label(filters_frame, text="Date range:").pack(side="left")
-        self.date_range_picker = DateEntry(filters_frame, width=12)
-        self.date_range_picker.pack(side="left")
+        # Stats summary section
+        summary = ctk.CTkFrame(self, fg_color=HEADER_BG)
+        summary.pack(fill="x", padx=24, pady=(0, 12))
+        # Example: Show total orders and total revenue
+        stats = self.get_stats()
+        ctk.CTkLabel(summary, text=f"Total commandes : {stats['total_orders']}", font=("Arial", 14, "bold"), text_color=ACCENT).pack(side="left", padx=10)
+        ctk.CTkLabel(summary, text=f"Revenu total : {stats['total_revenue']} DH", font=("Arial", 14, "bold"), text_color=ACCENT).pack(side="left", padx=20)
 
-        ttk.Label(filters_frame, text="Product/Category:").pack(side="left")
-        self.product_category_filter = ttk.Combobox(filters_frame, values=[""])
-        self.product_category_filter.pack(side="left")
+        # Graph area
+        graph_frame = ctk.CTkFrame(self, fg_color=TABLE_BG, corner_radius=12)
+        graph_frame.pack(expand=True, fill="both", padx=24, pady=12)
+        self.plot_orders_per_day(graph_frame)
 
-        # Report Area
-        report_area_frame = ctk.CTkFrame(self, corner_radius=10)
-        report_area_frame.pack(fill="both", expand=True, padx=10, pady=10)
+    def get_stats(self):
+        # You should implement get_orders_stats in your database.crud
+        # Example return: {'total_orders': 20, 'total_revenue': 1234.56}
+        try:
+            return get_orders_stats()
+        except Exception:
+            return {'total_orders': 0, 'total_revenue': 0}
 
-        self.report_table = ttk.Treeview(report_area_frame)
-        self.report_table.pack(fill="both", expand=True)
-
-        # Export Buttons
-        export_buttons_frame = ctk.CTkFrame(self, corner_radius=10)
-        export_buttons_frame.pack(fill="x", padx=10, pady=10)
-
-        ctk.CTkButton(export_buttons_frame, text="Export CSV", command=lambda: export_to_csv(self.report.get_data())).pack(side="left")
-        ctk.CTkButton(export_buttons_frame, text="Export PDF", command=lambda: export_to_pdf(self.report.get_data())).pack(side="left")
-
-        # Events
-        self.date_range_picker.bind("<<DateEntrySelected>>", self.update_report)
-        self.product_category_filter.bind("<<ComboboxSelected>>", self.update_report)
-
-        self.update_report()
-
-    def update_report(self, event=None):
-        self.report_table.delete(*self.report_table.get_children())
-        data = self.report.get_data(start_date=self.date_range_picker.get_date(), product_category=self.product_category_filter.get())
-        for row in data:
-            self.report_table.insert("", "end", values=row)
+    def plot_orders_per_day(self, frame):
+        # Example data: Replace with your own DB query
+        import datetime
+        days = ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"]
+        orders = [5, 7, 3, 8, 6, 2, 4]
+        # If you have real data, replace above two lines
+        fig, ax = plt.subplots(figsize=(6,3.2), dpi=100)
+        fig.patch.set_facecolor(TABLE_BG)
+        ax.bar(days, orders, color=ACCENT)
+        ax.set_title("Commandes par jour", fontsize=14, color=HEADER_BG)
+        ax.set_facecolor(TABLE_BG)
+        ax.tick_params(axis='x', colors=HEADER_BG)
+        ax.tick_params(axis='y', colors=HEADER_BG)
+        ax.spines['bottom'].set_color(HEADER_BG)
+        ax.spines['left'].set_color(HEADER_BG)
+        ax.spines['top'].set_visible(False)
+        ax.spines['right'].set_visible(False)
+        for label in (ax.get_xticklabels() + ax.get_yticklabels()):
+            label.set_fontsize(12)
+            label.set_color(HEADER_BG)
+        canvas = FigureCanvasTkAgg(fig, master=frame)
+        canvas.draw()
+        canvas.get_tk_widget().pack(expand=True, fill="both")
+        plt.close(fig)
