@@ -54,6 +54,29 @@ def deleteProduct(id):
     conn.close()
     return cursor.rowcount
 
+def getTable():
+    conn, cursor = connection()
+    query = """
+        SELECT 
+            o.id as order_id,
+            o.created_at as date,
+            c.name as client, 
+            c.phone as phone,
+            GROUP_CONCAT(CONCAT(p.name, ' (', oi.quantity, 'x)') SEPARATOR ', ') as articles,
+            SUM(p.price * oi.quantity) as total,
+            o.status 
+        FROM orders o
+        JOIN customers c ON o.customer_id = c.id
+        JOIN order_items oi ON o.id = oi.order_id
+        JOIN products p ON oi.product_id = p.id
+        GROUP BY o.id, c.name, c.phone, o.created_at, o.status
+        ORDER BY o.created_at DESC
+    """
+    cursor.execute(query)
+    orders = cursor.fetchall()
+    conn.close()
+    return orders
+
 def createOrder(order):
     conn, cursor = connection()
     query = """INSERT INTO orders (customer_id) VALUES (%s)"""
@@ -112,3 +135,11 @@ def deleteOrderItem(id):
     conn.commit()
     conn.close()
     return cursor.rowcount
+
+def get_all_products():
+    conn, cursor = connection()
+    query = """SELECT * FROM products"""
+    cursor.execute(query)
+    products = cursor.fetchall()
+    conn.close()
+    return products
