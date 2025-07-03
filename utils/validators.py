@@ -14,7 +14,7 @@ def validate_order_item(product, quantity, price):
         return False
     if not re.match(r"^\d+$", quantity):
         return False
-    if not re.match(r"^\d+(\.\d+)?$", price):
+    if not re.match(r"^\d+$", price):
         return False
     return True
 
