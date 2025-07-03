@@ -143,3 +143,18 @@ def get_all_products():
     products = cursor.fetchall()
     conn.close()
     return products
+
+def get_orders_stats():
+    conn, cursor = connection()
+    # Total orders
+    cursor.execute("SELECT COUNT(*) FROM orders")
+    total_orders = cursor.fetchone()[0]
+    # Total revenue: sum of all order_items price * quantity
+    cursor.execute("""
+        SELECT COALESCE(SUM(p.price * oi.quantity), 0)
+        FROM order_items oi
+        JOIN products p ON oi.product_id = p.id
+    """)
+    total_revenue = cursor.fetchone()[0] or 0
+    conn.close()
+    return {'total_orders': total_orders, 'total_revenue': total_revenue}
